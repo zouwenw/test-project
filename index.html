@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 引入样式文件 -->
+
+
+    <!-- 引入 Vue 和 Vant 的 JS 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.min.js"></script>
+    <!-- CDNJS :: Sortable (https://cdnjs.com/) -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.8.4/Sortable.min.js"></script>
+    <!-- CDNJS :: Vue.Draggable (https://cdnjs.com/) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.20.0/vuedraggable.umd.min.js"></script>
+</head>
+
+<style>
+    [v-cloak] {
+        display: none;
+    }
+
+    .content {
+        position: relative;
+    }
+
+    .index {
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+        text-align: center;
+        border-radius: 50%;
+        background: #ccc;
+        color: #fff;
+        margin-right: 10px;
+    }
+
+    .title {
+        color: #ccc;
+        padding-bottom: 10px;
+        margin: 0 0 0 20px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .drag-class {
+        background: #1989fa;
+        position: absolute;
+        left: 0;
+        right: 0;
+    }
+
+    .drag-class .index {
+        background: #fff !important;
+        color: #1989fa !important;
+    }
+
+    .item-wrap {
+        display: flex;
+        align-items: center;
+    }
+
+    .list-item {
+        /* border-bottom: 1px solid #ddd; */
+        height: 50px;
+        line-height: 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+    }
+
+    .border-line {
+        position: relative;
+    }
+
+    .border-line::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 5%;
+        width: 95%;
+        height: 1px;
+        background: #ddd;
+    }
+
+    .index.active {
+        background: #1989fa;
+    }
+</style>
+
+<body>
+    <div id="app" v-cloak>
+        <div class="box">
+            <div class="title">拖动右边把手排序</div>
+            <div class="content">
+                <draggable v-model="sortList" @end="handleEnd" :options="{
+                  forceFallback: true,
+                  draggable: '.sort-list',
+                  animation: 500,
+                  chosenClass: '.choosed-class',
+                  ghostClass: '.ghost-class',
+                  dragClass: 'drag-class',
+                  scroll: false,
+                }">
+                    <transition-group>
+                        <ul class="sort-list" v-for="(item, index) in sortList" :key="index">
+                            <li class="list-item" draggable="true">
+                                <div class="item-wrap">
+                                    <div class="index" :class="{ active: isClick }">
+                                        {{ index + 1 }}
+                                    </div>
+                                    <div>{{ item.name }}</div>
+                                </div>
+                                <van-icon name="wap-nav" color="#ccc" size="20" />
+                            </li>
+                            <div class="border-line"></div>
+                        </ul>
+                    </transition-group>
+                </draggable>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                sortList: [
+                    {
+                        name: "选项A",
+                    },
+                    {
+                        name: "选项B",
+                    },
+                    {
+                        name: "选项C",
+                    },
+                    {
+                        name: "选项D",
+                    },
+                ],
+                isClick: false,
+            }
+        },
+        methods: {
+            scrollFn(x, y, z) {
+                console.log(x, y, z);
+            },
+            handleEnd() {
+                this.isClick = true;
+            },
+        }
+    })
+</script>
