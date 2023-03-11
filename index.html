@@ -4,157 +4,356 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1.0, user-scalable=no">
     <title>Document</title>
-    <!-- 引入样式文件 -->
+    <style>
+        body {
+            background-color: #ffffff;
+            padding: 0;
+            margin: 0;
+        }
 
+        .main {
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            padding: 0px;
+        }
 
-    <!-- 引入 Vue 和 Vant 的 JS 文件 -->
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.min.js"></script>
-    <!-- CDNJS :: Sortable (https://cdnjs.com/) -->
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.8.4/Sortable.min.js"></script>
-    <!-- CDNJS :: Vue.Draggable (https://cdnjs.com/) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.20.0/vuedraggable.umd.min.js"></script>
+        .drag-div {
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            position: absolute;
+            background: rgb(247, 247, 247);
+        }
+
+        .others {
+            width: 100%;
+            height: 150px;
+            background-color: #fff;
+            position: relative;
+        }
+
+        .title {
+            height: 100%;
+            line-height: 150px;
+            padding: 50px 20px;
+            font-size: 16px;
+            color: #ccc;
+        }
+
+        .index-number {
+            background: #ccc;
+            width: 22px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            border-radius: 50%;
+            color: #fff;
+            margin-left: 20px;
+        }
+
+        .drag-div-elem {
+            border-top: 1px solid #dddddd;
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            position: absolute;
+            display: flex;
+            align-items: center;
+        }
+
+        .drag-first-elem {
+            border-top: 1px solid #dddddd;
+        }
+
+        .payway-info {
+            width: 80%;
+            /* height: 100%; */
+            float: left;
+            padding-left: 15px;
+            text-align: left;
+            line-height: 50px;
+            font-size: 16px;
+        }
+
+        .drag-elem-btn {
+            max-width: 60px;
+            float: right;
+            padding: 16px;
+            border: 0px;
+        }
+
+        .drag-elem-btn-icon {
+            width: 20px;
+            height: 2px;
+            border-left: 0px;
+            border-right: 0px;
+            border-top: 2px solid #dddddd;
+            border-bottom: 2px solid #dddddd;
+            padding-bottom: 4px;
+            padding-top: 4px;
+            background-clip: content-box;
+            background-color: #dddddd;
+        }
+
+        .drag-elem-arrow-icon-up, .drag-elem-arrow-icon-down{
+            display: none;
+        }
+        .active-show .index-number{
+            background: #0091ea;
+        }
+        .show-top .drag-elem-btn-icon {
+            display: none;
+        }
+
+        .show-top .drag-elem-arrow {
+            width: 30px;
+            height: 30px;
+        }
+
+        .show-top .drag-elem-arrow-icon-up,
+        .show-top .drag-elem-arrow-icon-down {
+            position: relative;
+            display: block;
+        }
+
+        .show-top .drag-elem-arrow-icon-up::before {
+            content: " ";
+            display: inline-block;
+            -webkit-transform: rotate(135deg);
+            -ms-transform: rotate(135deg);
+            transform: rotate(135deg);
+            height: 10px;
+            width: 10px;
+            border-width: 0 0 2px 2px;
+            border-color: #fff;
+            border-style: solid;
+            position: relative;
+            top: -5px;
+            left: -5px;
+        }
+
+        .show-top .drag-elem-arrow-icon-down::before {
+            content: " ";
+            display: inline-block;
+            -webkit-transform: rotate(-45deg);
+            -ms-transform: rotate(-45deg);
+            transform: rotate(-45deg);
+            height: 10px;
+            width: 10px;
+            border-width: 0 0 2px 2px;
+            border-color: #fff;
+            border-style: solid;
+            position: relative;
+            top: -10px;
+            left: -5px;
+        }
+
+        .show-top {
+            z-index: 20;
+            background: #0091ea;
+            transition: .3s linear;
+        }
+
+        .show-top .index-number {
+            background: #fff;
+            color: #0091ea;
+        }
+    </style>
 </head>
 
-<style>
-    [v-cloak] {
-        display: none;
-    }
-
-    .content {
-        position: relative;
-    }
-
-    .index {
-        width: 20px;
-        height: 20px;
-        line-height: 20px;
-        text-align: center;
-        border-radius: 50%;
-        background: #ccc;
-        color: #fff;
-        margin-right: 10px;
-    }
-
-    .title {
-        color: #ccc;
-        padding-bottom: 10px;
-        margin: 0 0 0 20px;
-        border-bottom: 1px solid #ddd;
-    }
-
-    .drag-class {
-        background: #1989fa;
-        position: absolute;
-        left: 0;
-        right: 0;
-    }
-
-    .drag-class .index {
-        background: #fff !important;
-        color: #1989fa !important;
-    }
-
-    .item-wrap {
-        display: flex;
-        align-items: center;
-    }
-
-    .list-item {
-        /* border-bottom: 1px solid #ddd; */
-        height: 50px;
-        line-height: 50px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 20px;
-    }
-
-    .border-line {
-        position: relative;
-    }
-
-    .border-line::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 5%;
-        width: 95%;
-        height: 1px;
-        background: #ddd;
-    }
-
-    .index.active {
-        background: #1989fa;
-    }
-</style>
-
 <body>
-    <div id="app" v-cloak>
-        <div class="box">
-            <div class="title">拖动右边把手排序</div>
-            <div class="content">
-                <draggable v-model="sortList" @end="handleEnd" :options="{
-                  forceFallback: true,
-                  draggable: '.sort-list',
-                  animation: 500,
-                  chosenClass: '.choosed-class',
-                  ghostClass: '.ghost-class',
-                  dragClass: 'drag-class',
-                  scroll: false,
-                }">
-                    <transition-group>
-                        <ul class="sort-list" v-for="(item, index) in sortList" :key="index">
-                            <li class="list-item" draggable="true">
-                                <div class="item-wrap">
-                                    <div class="index" :class="{ active: isClick }">
-                                        {{ index + 1 }}
-                                    </div>
-                                    <div>{{ item.name }}</div>
-                                </div>
-                                <van-icon name="wap-nav" color="#ccc" size="20" />
-                            </li>
-                            <div class="border-line"></div>
-                        </ul>
-                    </transition-group>
-                </draggable>
+    <div class=" main">
+    <div id="drag-div" class="drag-div">
+        <div class="others">
+            <div class="title">
+                拖动右边把手排序
+            </div>
+        </div>
+        <div class="drag-inset-div">
+            <div class="drag-div-elem" number="1">
+                <div class="index-number">1</div>
+                <div class="payway-info">选项A</div>
+                <div class="drag-elem-btn">
+                    <div class="drag-elem-btn-icon"></div>
+                </div>
+                <div class="drag-elem-arrow">
+                    <div class="drag-elem-arrow-icon-up"></div>
+                    <div class="drag-elem-arrow-icon-down"></div>
+                </div>
+            </div>
+            <div class="drag-div-elem" number="2">
+                <div class="index-number">2</div>
+                <div class="payway-info">选项B</div>
+                <div class="drag-elem-btn">
+                    <div class="drag-elem-btn-icon"></div>
+                </div>
+            </div>
+            <div class="drag-div-elem" number="3">
+                <div class="index-number">3</div>
+                <div class="payway-info">选项C</div>
+                <div class="drag-elem-btn">
+                    <div class="drag-elem-btn-icon"></div>
+                </div>
+            </div>
+            <div class="drag-div-elem" number="4">
+                <div class="index-number">4</div>
+                <div class="payway-info">选项D</div>
+                <div class="drag-elem-btn">
+                    <div class="drag-elem-btn-icon"></div>
+                </div>
             </div>
         </div>
     </div>
-</body>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        var isdrag = true;  //是否移动
+        var topHeight = $(".others").css("height");  //头部div的高度
+        var topHeightInt = 0;
+        var elementHeight = $(".drag-div-elem").css("height");  //每一个移动元素DIV的高度
+        var elementHeightInt = 0;
+        var halfElementHeightInt = 0;
+        var startEleCssTopInt;//元素div的起始时的top值
+        var lastTouchTempY = null;//上一次滑动时元素触摸点坐标
+        var startTouchY; //起始时的触摸点坐标
+        var choseEleNum = null; //选择的是第几个元素
+        var eleMoveDistance = 0;   //选择元素相对于其他元素的距离
+        var isNeedMoveEle = true;   //其他元素是否需要移动
+        var theMaxNumberAttr = null; //元素最大的number值
+        var theMinNumberAttr = null; //元素最小的number值
+        var theMaxMoveScope = null;  //可以移动的最大范围  ，最小范围为topHeightInt；
+
+        //开始移动
+        function dragStart(e) {
+            isdrag = true;
+            e.preventDefault();
+            startTouchY = e.originalEvent.targetTouches[0].pageY;
+            var obj = $(e.target);
+            var paywayEleObj = obj.parents(".drag-div-elem");
+            choseEleNum = $(paywayEleObj).attr("number");
+            var startTouchCssTop = $(paywayEleObj).css("top");
+            if (undefined == startTouchCssTop || null == startTouchCssTop
+                || "auto" == startTouchCssTop) {
+                startEleCssTopInt = topHeightInt;
+            } else {
+                startEleCssTopInt = parseInt(startTouchCssTop.substring(0,
+                    startTouchCssTop.length - 2));
+            }
+            $(paywayEleObj).addClass("show-top");
+            $(paywayEleObj).addClass("active-show");
+        }
+        function dragMove(e) {
+            var direction = "up";
+            e.preventDefault();
+            //获取移动的距离
+            var moveTouchY = e.originalEvent.targetTouches[0].pageY; //获取第一个触点
+            console.log("moveTouchY===" + moveTouchY);
+            console.log("lastTouchTempY===" + lastTouchTempY);
+            if (isdrag) {
+                var obj = $(e.target);
+                var paywayEleObj = obj.parents(".drag-div-elem");
+                //判断是不是在可移动的范围内
+                if (moveTouchY < topHeightInt || moveTouchY > theMaxMoveScope) {
+                    return;
+                }
+                //此次滑动的距离
+                var distance = moveTouchY - startTouchY;
+                eleMoveDistance = eleMoveDistance + Math.abs((moveTouchY - (null == lastTouchTempY ? startTouchY : lastTouchTempY)));
+                if (null == lastTouchTempY) {
+                    //向上滑动
+                    if (startTouchY > moveTouchY) {
+                        direction = "up";
+                    } else {
+                        direction = "down";
+                    }
+                } else {
+                    //向上滑动
+                    if (lastTouchTempY > moveTouchY) {
+                        direction = "up";
+                    } else {
+                        direction = "down";
+                    }
+                }
+                var newCssTop = startEleCssTopInt + distance;
+                if (newCssTop < 0) {
+                    return;
+                }
+                $(paywayEleObj).css({ "top": newCssTop + "px" });
+                console.log("eleMoveDistance===" + eleMoveDistance);
+                //向下移动
+                if ("down" == direction && parseInt(theMaxNumberAttr) > parseInt(choseEleNum)) {
+                    if (isNeedMoveEle && eleMoveDistance < elementHeightInt && eleMoveDistance >= halfElementHeightInt) {
+                        isNeedMoveEle = false;
+                        var autoUpEleNum = parseInt(choseEleNum) + 1;
+                        var autoUpEleCssTop = $(".drag-div-elem[number='" + autoUpEleNum + "']").css("top");
+                        var autoUpEleCssTopInt = parseInt(autoUpEleCssTop.substring(0, autoUpEleCssTop.length - 2));
+                        var autoUpEleNewTop = autoUpEleCssTopInt - (elementHeightInt + 1);
+                        $(".drag-div-elem[number='" + autoUpEleNum + "']").css({ "top": autoUpEleNewTop + "px" });
+                        //换number
+                        $(".drag-div-elem[number='" + autoUpEleNum + "']").attr("number", choseEleNum);
+                        $(paywayEleObj).attr("number", autoUpEleNum);
+                        choseEleNum = autoUpEleNum;
+                    } else if (eleMoveDistance >= elementHeightInt) {
+                        eleMoveDistance = 0;
+                        isNeedMoveEle = true;
+                    }
+                }
+                //向上移动
+                if ("up" == direction && parseInt(theMinNumberAttr) < parseInt(choseEleNum)) {
+                    if (isNeedMoveEle && eleMoveDistance < elementHeightInt && eleMoveDistance >= halfElementHeightInt) {
+                        isNeedMoveEle = false;
+                        var autoUpEleNum = parseInt(choseEleNum) - 1;
+                        var autoUpEleCssTop = $(".drag-div-elem[number='" + autoUpEleNum + "']").css("top");
+                        var autoUpEleCssTopInt = parseInt(autoUpEleCssTop.substring(0, autoUpEleCssTop.length - 2));
+                        var autoUpEleNewTop = autoUpEleCssTopInt + (elementHeightInt + 1);
+                        $(".drag-div-elem[number='" + autoUpEleNum + "']").css({ "top": autoUpEleNewTop + "px" });
+                        //换number
+                        $(".drag-div-elem[number='" + autoUpEleNum + "']").attr("number", choseEleNum);
+                        $(paywayEleObj).attr("number", autoUpEleNum);
+                        choseEleNum = autoUpEleNum;
+                    } else if (eleMoveDistance >= elementHeightInt) {
+                        eleMoveDistance = 0;
+                        isNeedMoveEle = true;
+                    }
+                }
+                lastTouchTempY = moveTouchY;
+            }
+        }
+        function dragEnd(e) {
+            e.preventDefault();
+            isdrag = false;
+            lastTouchTempY = null;
+            var obj = $(e.target);
+            var paywayEleObj = obj.parents(".drag-div-elem");
+            $(paywayEleObj).removeClass("show-top");
+            //修正移动的元素的top
+            var number = $(paywayEleObj).attr("number");
+            var top = 0 + (elementHeightInt + 1) * (parseInt(number) - 1);
+            $(paywayEleObj).css({ "top": (top + topHeightInt) + "px" });
+        }
+        $(function () {
+            topHeightInt = parseInt(topHeight.substring(0, topHeight.length - 2));
+            elementHeightInt = parseInt(elementHeight.substring(0, elementHeight.length - 2));
+            halfElementHeightInt = parseInt(elementHeightInt + 2) / 2;
+            var elementDivArr = $(".drag-div").find(".drag-div-elem");
+            theMinNumberAttr = $(elementDivArr[0]).attr("number");
+            for (var i = 0; i < elementDivArr.length; i++) {
+                var eleObj = elementDivArr[i];
+                var number = $(eleObj).attr("number");
+                theMaxNumberAttr = number;
+                var top = 0 + (elementHeightInt + 1) * (parseInt(number) - 1);
+                $(eleObj).css({ "top": (top + topHeightInt) + "px" });
+            }
+            theMaxMoveScope = topHeightInt + number * (elementHeightInt + 1);
+            $(".drag-inset-div").css("height", (number * (elementHeightInt + 1) + 1) + "px");
+            $(".drag-div-elem").on("touchstart", dragStart);
+            $(".drag-div-elem").on("touchmove", dragMove);
+            $(".drag-div-elem").on("touchend", dragEnd);
+        });
+    </script>
+    </body>
 
 </html>
-
-<script>
-    var app = new Vue({
-        el: '#app',
-        data() {
-            return {
-                sortList: [
-                    {
-                        name: "选项A",
-                    },
-                    {
-                        name: "选项B",
-                    },
-                    {
-                        name: "选项C",
-                    },
-                    {
-                        name: "选项D",
-                    },
-                ],
-                isClick: false,
-            }
-        },
-        methods: {
-            scrollFn(x, y, z) {
-                console.log(x, y, z);
-            },
-            handleEnd() {
-                this.isClick = true;
-            },
-        }
-    })
-</script>
