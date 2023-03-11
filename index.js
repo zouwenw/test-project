@@ -18,10 +18,13 @@ var theMaxMoveScope = null;  //可以移动的最大范围  ，最小范围为to
 function dragStart(e) {
     isdrag = true;
     e.preventDefault();
+    // 手机端获取触摸目标在页面中的起始y坐标
     startTouchY = e.originalEvent.targetTouches[0].pageY;
     var obj = $(e.target);
     var paywayEleObj = obj.parents(".drag-div-elem");
+    //选择的是第几个元素
     choseEleNum = $(paywayEleObj).attr("number");
+    //目标元素在页面中的top值
     var startTouchCssTop = $(paywayEleObj).css("top");
     if (undefined == startTouchCssTop || null == startTouchCssTop
         || "auto" == startTouchCssTop) {
@@ -30,6 +33,7 @@ function dragStart(e) {
         startEleCssTopInt = parseInt(startTouchCssTop.substring(0,
             startTouchCssTop.length - 2));
     }
+    // 给要移动的元素添加动态类名
     $(paywayEleObj).addClass("show-top");
     $(paywayEleObj).addClass("active-show");
 }
@@ -138,7 +142,7 @@ $(function () {
         $(eleObj).css({ "top": (top + topHeightInt) + "px" });
     }
     theMaxMoveScope = topHeightInt + number * (elementHeightInt + 1);
-    $(".drag-inset-div").css("height", (number * (elementHeightInt + 1) + 1) + "px");
+    $(".drag-inset-div").css("height", (number * (elementHeightInt)) + "px");
     $(".drag-div-elem").on("touchstart", dragStart);
     $(".drag-div-elem").on("touchmove", dragMove);
     $(".drag-div-elem").on("touchend", dragEnd);
