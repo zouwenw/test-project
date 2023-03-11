@@ -33,6 +33,7 @@ function dragStart(e) {
     $(paywayEleObj).addClass("show-top");
     $(paywayEleObj).addClass("active-show");
 }
+// 移动中
 function dragMove(e) {
     var direction = "up";
     e.preventDefault();
@@ -110,6 +111,7 @@ function dragMove(e) {
         lastTouchTempY = moveTouchY;
     }
 }
+// 移动结束
 function dragEnd(e) {
     e.preventDefault();
     isdrag = false;

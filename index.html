@@ -62,6 +62,7 @@
             position: absolute;
             display: flex;
             align-items: center;
+            transition: .3s linear;
         }
 
         .drag-first-elem {
@@ -96,11 +97,6 @@
             padding-top: 4px;
             background-clip: content-box;
             background-color: #dddddd;
-        }
-
-        .drag-elem-arrow-icon-up,
-        .drag-elem-arrow-icon-down {
-            display: none;
         }
 
         .active-show .index-number {
@@ -157,12 +153,14 @@
         .show-top {
             z-index: 20;
             background: #0091ea;
-            transition: .3s linear;
         }
 
         .show-top .index-number {
             background: #fff;
             color: #0091ea;
+        }
+        .drag-inset-div {
+            background: #fff;
         }
     </style>
 </head>
